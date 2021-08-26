@@ -1,3 +1,5 @@
+import java.sql.Connection;
+import java.sql.Statement;
 import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -5,13 +7,16 @@ import java.time.Month;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+import java.sql.*;
+import java.sql.Connection;
+
 
 public class Calendar {
     private static Object Month;
     private static String day;
 
     @SuppressWarnings("ControlFlowStatementWithoutBraces")
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
         LocalDate lt = LocalDate.now();
         System.out.println("Today date: " + lt);
         int dayNumber;
@@ -117,29 +122,53 @@ public class Calendar {
         }
 
         Scanner Tasks = null;
+        String query = "";
         Map<Integer, String> tasks = new HashMap<>();
-        for (int i = 0; i < numberTasks; i++) {
+        for (int i = numberTasks - 1; i >= 0; i--) {
             Tasks = new Scanner(System.in);
             Integer a = i;
             String phrase1;
             phrase1 = Tasks.nextLine();
 
-            tasks.put(a,phrase1);
-        }
-        for (Map.Entry<Integer,String>m: tasks.entrySet()){
-            System.out.println(m.getKey()+ " " + m.getValue());
+            tasks.put(a, phrase1);
+
         }
 
+        for (Map.Entry<Integer, String> m : tasks.entrySet()) {
+            String s1 = m.getValue();
+            System.out.println(s1);
+            String[] share = m.getValue().split(",");
 
 
+            query = "INSERT INTO tasks (date,time,name) VALUES ( ?,?,?)";
 
 
+            try (Connection conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/ToDoList", "postgres", "Marty.950");
 
-        //   Scanner scanner = new Scanner(System.in);
-        //   String week = scanner.nextLine();
-        //  week.toUpperCase();
+                 PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+
+                preparedStatement.setDate(1, (Date.valueOf(LocalDate.now())));
+                preparedStatement.setTime(2, (Time.valueOf(share[0])));
+                preparedStatement.setString(3, share[1]);
+
+                int row = preparedStatement.executeUpdate();
+
+                System.out.println(row);
+
+
+            }
+
+        }
 
 
     }
+
+
+    //   Scanner scanner = new Scanner(System.in);
+    //   String week = scanner.nextLine();
+    //  week.toUpperCase();
+
+
 }
+
 
