@@ -1,22 +1,20 @@
-import java.sql.Connection;
-import java.sql.Statement;
+import jdk.internal.access.JavaIOFileDescriptorAccess;
+
+import java.sql.*;
+import java.sql.Date;
 import java.time.DayOfWeek;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
-import java.sql.*;
-import java.sql.Connection;
+import java.util.*;
 
 
 public class Calendar {
     private static Object Month;
     private static String day;
+    private static JavaIOFileDescriptorAccess list;
 
     @SuppressWarnings("ControlFlowStatementWithoutBraces")
-    public static void main(String[] args) throws SQLException {
+    public static <query> void main(String[] args) throws SQLException {
         LocalDate lt = LocalDate.now();
         System.out.println("Today date: " + lt);
         int dayNumber;
@@ -117,7 +115,7 @@ public class Calendar {
                 break;
             case SUNDAY:
                 System.out.println("Its Sunday");
-                System.out.println("Write tasks for Sunday");
+                System.out.println("Write hour with  tasks for Sunday");
                 break;
         }
 
@@ -137,7 +135,8 @@ public class Calendar {
         for (Map.Entry<Integer, String> m : tasks.entrySet()) {
             String s1 = m.getValue();
             System.out.println(s1);
-            String[] share = m.getValue().split(",");
+            String[] share = m.getValue().split(","); // dzieli wyrażenie
+            // usuwa spacje
 
 
             query = "INSERT INTO tasks (date,time,name) VALUES ( ?,?,?)";
@@ -148,15 +147,41 @@ public class Calendar {
                  PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 
                 preparedStatement.setDate(1, (Date.valueOf(LocalDate.now())));
-                preparedStatement.setTime(2, (Time.valueOf(share[0])));
+                preparedStatement.setTime(2, (Time.valueOf(share[0].replaceAll(" ", ""))));
                 preparedStatement.setString(3, share[1]);
 
                 int row = preparedStatement.executeUpdate();
 
                 System.out.println(row);
 
+            }
+            final String SQL_SELECT = "SELECT  time, name, status, date  FROM tasks WHERE date = CURRENT_DATE  ";
+
+            try (Connection conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/ToDoList", "postgres", "Marty.950");
+
+                 PreparedStatement preparedStatement = conn.prepareStatement(SQL_SELECT)) {
+
+
+
+                ResultSet resultSet = preparedStatement.executeQuery();
+
+                while (resultSet.next()) {
+
+                    Time time = resultSet.getTime("time");
+                    String name = resultSet.getString("name");
+                    String status = resultSet.getString("status");
+
+
+
+                    List<String> obj = new ArrayList<String>(Arrays.<String>asList(String.valueOf(time), name, status));
+
+                    System.out.println(obj);
+
+
+                }
 
             }
+
 
         }
 
