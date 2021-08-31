@@ -142,7 +142,7 @@ public class Calendar {
             query = "INSERT INTO tasks (date,time,name) VALUES ( ?,?,?)";
 
 
-            try (Connection conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/ToDoList", "postgres", "Marty.950");
+            try (Connection conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/ToDoList", "postgres", "xxx");
 
                  PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 
@@ -157,7 +157,7 @@ public class Calendar {
             }
             final String SQL_SELECT = "SELECT  time, name, status, date  FROM tasks WHERE date = CURRENT_DATE  ";
 
-            try (Connection conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/ToDoList", "postgres", "Marty.950");
+            try (Connection conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/ToDoList", "postgres", "xxx");
 
                  PreparedStatement preparedStatement = conn.prepareStatement(SQL_SELECT)) {
 
