@@ -91,31 +91,31 @@ public class Calendar {
 
             case MONDAY:
                 System.out.println("Its Monday");
-                System.out.println("Write tasks for Monday");
+                System.out.println("Write time (hh:mm:ss)  with  task for Monday");
                 break;
             case TUESDAY:
                 System.out.println("Its Tuesday");
-                System.out.println("How many tasks do you want to write");
+                System.out.println("Write time (hh:mm:ss)  with  task for Tuesday");
                 break;
             case WEDNESDAY:
                 System.out.println("Its Wenesday");
-                System.out.println("Write tasks for Wednesday");
+                System.out.println("Write time (hh:mm:ss)  with  task for Wednesday");
                 break;
             case THURSDAY:
                 System.out.println("Its Thursday");
-                System.out.println("Write tasks for Thursday");
+                System.out.println("Write time (hh:mm:ss)  with  task for Thursday");
                 break;
             case FRIDAY:
                 System.out.println("Its Friday");
-                System.out.println("Write tasks for Friday");
+                System.out.println("Write time (hh:mm:ss)  with  task for Friday");
                 break;
             case SATURDAY:
                 System.out.println("Its Saturday");
-                System.out.println("Write tasks for Saturday");
+                System.out.println("Write time (hh:mm:ss)  with  task for Saturday");
                 break;
             case SUNDAY:
                 System.out.println("Its Sunday");
-                System.out.println("Write hour with  tasks for Sunday");
+                System.out.println("Write time (hh:mm:ss)  with  task for Sunday");
                 break;
         }
 
@@ -135,8 +135,7 @@ public class Calendar {
         for (Map.Entry<Integer, String> m : tasks.entrySet()) {
             String s1 = m.getValue();
             System.out.println(s1);
-            String[] share = m.getValue().split(","); // dzieli wyrażenie
-            // usuwa spacje
+            String[] share = m.getValue().split(",");
 
 
             query = "INSERT INTO tasks (date,time,name) VALUES ( ?,?,?)";
@@ -152,48 +151,61 @@ public class Calendar {
 
                 int row = preparedStatement.executeUpdate();
 
-                System.out.println(row);
+                //  System.out.println(row);
 
             }
-            final String SQL_SELECT = "SELECT  time, name, status, date  FROM tasks WHERE date = CURRENT_DATE  ";
-
-            try (Connection conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/ToDoList", "postgres", "Marty.950");
-
-                 PreparedStatement preparedStatement = conn.prepareStatement(SQL_SELECT)) {
-
-
-
-                ResultSet resultSet = preparedStatement.executeQuery();
-
-                while (resultSet.next()) {
-
-                    Time time = resultSet.getTime("time");
-                    String name = resultSet.getString("name");
-                    String status = resultSet.getString("status");
-
-
-
-                    List<String> obj = new ArrayList<String>(Arrays.<String>asList(String.valueOf(time), name, status));
-
-                    System.out.println(obj);
-
-
-                }
-
-            }
-
-
         }
+        Scanner Question = null;
+
+        final String SQL_SELECT = "SELECT id,  time, name, status, date  FROM tasks WHERE date = CURRENT_DATE AND status <> 'DELETE' AND time <= CURRENT_TIME ";
+
+        try (Connection conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/ToDoList", "postgres", "Marty.950");
+
+             PreparedStatement preparedStatement = conn.prepareStatement(SQL_SELECT)) {
 
 
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+
+            String answear = null;
+            while (resultSet.next()) {
+
+                Time time = resultSet.getTime("time");
+                String name = resultSet.getString("name");
+                String status = resultSet.getString("status");
+                Integer id = resultSet.getInt("id");
+
+
+                List<String> obj = new ArrayList<String>(Arrays.<String>asList(String.valueOf(time), name, status));
+
+                Question = new Scanner(System.in);
+
+                System.out.println("Did you do" + " " + time + " " + "o'clock task?");
+
+                answear = Question.nextLine();
+
+                String updateQuery;
+
+                if ("yes".equalsIgnoreCase(answear)) {
+                    updateQuery = "Update tasks set status = 'DELETE' where id =? ";
+
+                    try (PreparedStatement statement = conn.prepareStatement(updateQuery)) {
+                        statement.setInt(1, id);
+                        statement.executeUpdate();
+                    }
+                } else {
+                    System.out.println("Do it! ");
+                }
+            }
+        }
+        System.out.println("This is end of TO DO LIST!");
     }
 
-
-    //   Scanner scanner = new Scanner(System.in);
-    //   String week = scanner.nextLine();
-    //  week.toUpperCase();
-
-
 }
+
+
+
+
+
 
 
