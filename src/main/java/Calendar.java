@@ -1,4 +1,4 @@
-import jdk.internal.access.JavaIOFileDescriptorAccess;
+
 
 import java.sql.*;
 import java.sql.Date;
@@ -9,23 +9,23 @@ import java.util.*;
 
 
 public class Calendar {
-    private static Object Month;
+
     private static String day;
-    private static JavaIOFileDescriptorAccess list;
+
 
     @SuppressWarnings("ControlFlowStatementWithoutBraces")
     public static <query> void main(String[] args) throws SQLException {
         LocalDate lt = LocalDate.now();
         System.out.println("Today date: " + lt);
-        int dayNumber;
 
-        java.time.Month s = lt.getMonth();
+
+        java.time.Month simple= lt.getMonth();
 
         String end = "no";
 
         switch (lt.getMonth()) {
             case JANUARY:
-                dayNumber = 31;
+             int   dayNumber = 31;
                 System.out.println("Hello in TODO list in January");
                 break;
             case FEBRUARY:
@@ -85,7 +85,7 @@ public class Calendar {
         System.out.println("How many tasks do you want to write?");
         int numberTasks = scanner.nextInt();
 
-        DayOfWeek d = lt.getDayOfWeek();
+        DayOfWeek day = lt.getDayOfWeek();
 
         switch (lt.getDayOfWeek()) {
 
@@ -122,13 +122,13 @@ public class Calendar {
         Scanner Tasks = null;
         String query = "";
         Map<Integer, String> tasks = new HashMap<>();
-        for (int i = numberTasks - 1; i >= 0; i--) {
+        for (int i = 0; i< numberTasks ;  i++) {
             Tasks = new Scanner(System.in);
-            Integer a = i;
+           // Integer a = i;
             String phrase1;
             phrase1 = Tasks.nextLine();
 
-            tasks.put(a, phrase1);
+            tasks.put( i, phrase1);
 
         }
 
@@ -141,7 +141,7 @@ public class Calendar {
             query = "INSERT INTO tasks (date,time,name) VALUES ( ?,?,?)";
 
 
-          try (Connection conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/ToDoList", "postgres", "xxx");
+          try (Connection conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/ToDoList", "postgres", "Marty.950");
 
                  PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 
@@ -151,7 +151,7 @@ public class Calendar {
 
                 int row = preparedStatement.executeUpdate();
 
-                //  System.out.println(row);
+
 
             }
         }
@@ -160,7 +160,7 @@ public class Calendar {
 
         final String SQL_SELECT = "SELECT id,  time, name, status, date  FROM tasks WHERE date = CURRENT_DATE AND status <> 'DELETE' AND time <= CURRENT_TIME ";
 
-            try (Connection conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/ToDoList", "postgres", "xxx");
+            try (Connection conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/ToDoList", "postgres", "Marty.950");
 
 
              PreparedStatement preparedStatement = conn.prepareStatement(SQL_SELECT)) {
@@ -178,7 +178,6 @@ public class Calendar {
                 Integer id = resultSet.getInt("id");
 
 
-                List<String> obj = new ArrayList<String>(Arrays.<String>asList(String.valueOf(time), name, status));
 
                 Question = new Scanner(System.in);
 
